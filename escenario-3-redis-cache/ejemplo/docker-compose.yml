@@ -1,0 +1,49 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: mi_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - cache_network
+    command: redis-server --appendonly yes
+
+  app:
+    build: ./app
+    container_name: app_flask
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      FLASK_ENV: development
+    depends_on:
+      - redis
+    networks:
+      - cache_network
+    volumes:
+      - ./app:/app
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis_ui
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    depends_on:
+      - redis
+    networks:
+      - cache_network
+
+volumes:
+  redis_data:
+
+networks:
+  cache_network:
+    driver: bridge
