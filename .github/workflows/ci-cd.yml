@@ -34,7 +34,7 @@ jobs:
 
       - name: Ejecutar pruebas
         working-directory: escenario-4-cicd/ejercicio/src
-        run: pytest tests/ -v
+        run: python -m pytest tests/ -v
 
   # ---------- 2. Escaneo de vulnerabilidades ----------
   seguridad:
